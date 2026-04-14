@@ -808,8 +808,8 @@
       img.src = logoSrc;
     });
 
-    // Generate QR Code - ganti URL ini dengan URL menu online kamu
-    const menuURL = window.location.href; "https://nathanealphi.github.io/multatuli-menu/";
+    // Generate QR Code - URL menu online
+    const menuURL = "https://nathanealphi.github.io/multatuli-menu/";
     new QRCode(document.getElementById("qrcode"), {
       text: menuURL,
       width: 150,
