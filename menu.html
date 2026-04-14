@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multatuli Kopi — Premium Menu</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inria+Serif:wght@400;700&display=swap');
+
+  :root {
+    --bg: #f3eee8;
+    --page: #ffffff;
+    --ink: #171311;
+    --muted: #6e6258;
+    --line: rgba(23, 19, 17, 0.10);
+    --accent: #6f1d2a;
+    --page-width: 1540px;
+    --page-height: 1000px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .menu-book {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 20px;
+  }
+
+  .page {
+    width: var(--page-width);
+    height: var(--page-height);
+    margin: 0 auto;
+    background: var(--page);
+    border: 1px solid rgba(23, 19, 17, 0.08);
+    border-radius: 28px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.08);
+    padding: 24px 26px 28px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cg fill='none' stroke='%238b6b4a' stroke-opacity='0.07' stroke-width='1.5'%3E%3Cellipse cx='42' cy='42' rx='16' ry='24' transform='rotate(-28 42 42)'/%3E%3Cpath d='M42 24 C36 34 36 50 42 60'/%3E%3Cellipse cx='146' cy='60' rx='16' ry='24' transform='rotate(18 146 60)'/%3E%3Cpath d='M146 42 C140 52 140 68 146 78'/%3E%3Cellipse cx='92' cy='128' rx='16' ry='24' transform='rotate(-16 92 128)'/%3E%3Cpath d='M92 110 C86 120 86 136 92 146'/%3E%3Cellipse cx='178' cy='156' rx='16' ry='24' transform='rotate(24 178 156)'/%3E%3Cpath d='M178 138 C172 148 172 164 178 174'/%3E%3Cellipse cx='52' cy='184' rx='16' ry='24' transform='rotate(22 52 184)'/%3E%3Cpath d='M52 166 C46 176 46 192 52 202'/%3E%3C/g%3E%3C/svg%3E") repeat;
+    background-size: 220px 220px;
+    opacity: 0.9;
+    pointer-events: none;
+  }
+
+  .page::after {
+    content: "";
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 170px;
+    height: 170px;
+    border: 1px solid rgba(111, 29, 42, 0.12);
+    border-radius: 50%;
+    transform: translate(35%, -35%);
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .brand-row,
+  .page-title-wrap,
+  .content,
+  .footer-note,
+  .cover-hero,
+  .cover-bottom,
+  .note-shot {
+    position: relative;
+    z-index: 1;
+  }
+
+  .brand-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .brand {
+    max-width: 80%;
+  }
+
+  .eyebrow,
+  .cover-eyebrow {
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-size: 12px;
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+
+  .logo,
+  .cover-title {
+    margin: 0;
+    font-size: 52px;
+    line-height: 0.95;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    text-transform: uppercase;
+    font-family: "Inria Serif", Georgia, serif;
+  }
+
+  .subtitle,
+  .cover-subtitle {
+    margin-top: 8px;
+    font-size: 14px;
+    color: var(--muted);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .brand-mark,
+  .cover-brand-mark {
+    width: 82px;
+    height: 82px;
+    object-fit: contain;
+    background: rgba(23, 19, 17, 0.03);
+    border: 1px solid rgba(23, 19, 17, 0.08);
+    border-radius: 18px;
+    padding: 8px;
+    flex: 0 0 auto;
+  }
+
+  .page-title-wrap {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+  }
+
+  .page-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 10px;
+  }
+
+  .page-title h2 {
+    margin: 0;
+    font-size: 37px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+
+  .page-no {
+    color: rgba(23, 19, 17, 0.35);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .page-desc {
+    margin: 0;
+    max-width: 92%;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.52;
+  }
+
+  .content {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    align-items: start;
+  }
+
+  .column-stack {
+    display: grid;
+    gap: 6px;
+    align-self: start;
+  }
+
+  .section {
+    background: linear-gradient(180deg, rgba(111, 29, 42, 0.03), rgba(255, 255, 255, 0.94));
+    border: 1px solid rgba(23, 19, 17, 0.08);
+    border-radius: 20px;
+    padding: 10px 12px 8px;
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 6px;
+    color: var(--ink);
+    text-transform: uppercase;
+    font-size: 12.5px;
+    letter-spacing: 0.18em;
+    font-weight: 800;
+  }
+
+  .section-title::before {
+    content: "";
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
+    display: inline-block;
+  }
+
+  .items {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .item {
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .item:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .item-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: start;
+    margin-bottom: 3px;
+  }
+
+  .item-name {
+    font-size: 22px;
+    line-height: 1.16;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+  }
+
+  .price {
+    font-size: 14.5px;
+    line-height: 1;
+    font-weight: 800;
+    color: var(--accent);
+    white-space: nowrap;
+    text-align: right;
+    padding-top: 2px;
+  }
+
+  .price-tail {
+    font-size: 0.64em;
+    font-weight: 700;
+    opacity: 0.82;
+    vertical-align: 0.08em;
+  }
+
+  .price-unit {
+    font-size: 0.72em;
+    font-weight: 700;
+    opacity: 0.78;
+    letter-spacing: 0.02em;
+  }
+
+  .desc {
+    margin: 0 0 5px;
+    font-size: 15.5px;
+    line-height: 1.38;
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .reco {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.3;
+    color: var(--ink);
+    font-style: italic;
+    font-weight: 650;
+  }
+
+  .note-shot {
+    position: relative;
+    z-index: 1;
+    margin-top: 16px;
+    margin-right: 4px;
+    text-align: right;
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .note-shot .accent {
+    color: var(--accent);
+    font-weight: 800;
+  }
+
+  .footer-note {
+    position: absolute;
+    left: 42px;
+    right: 34px;
+    bottom: 24px;
+    padding-top: 9px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: rgba(23, 19, 17, 0.45);
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .footer-note .accent {
+    color: var(--accent);
+  }
+
+  .cover-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .cover-page::before {
+    opacity: 0.45;
+  }
+
+  .cover-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 30px;
+    align-items: center;
+    width: min(100%, 1180px);
+    margin: 0 auto;
+  }
+
+  .cover-copy {
+    max-width: 100%;
+  }
+
+  .cover-logo-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+
+  .cover-title {
+    font-size: 62px;
+    line-height: 0.94;
+  }
+
+  .cover-welcome {
+    margin: 0 0 10px;
+    font-size: 30px;
+    line-height: 1.08;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    max-width: 16ch;
+  }
+
+  .cover-text {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.62;
+    color: var(--muted);
+    max-width: 58ch;
+  }
+
+  .qr-card {
+    background: linear-gradient(180deg, rgba(111, 29, 42, 0.04), rgba(255, 255, 255, 0.96));
+    border: 1px solid rgba(23, 19, 17, 0.10);
+    border-radius: 24px;
+    padding: 18px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+    width: 100%;
+    max-width: 290px;
+    justify-self: center;
+  }
+
+  .qr-box {
+    width: 170px;
+    height: 170px;
+    border-radius: 18px;
+    border: 1px dashed rgba(111, 29, 42, 0.42);
+    background: linear-gradient(135deg, rgba(111, 29, 42, 0.05), rgba(255, 255, 255, 0.9));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .qr-grid {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    background:
+      linear-gradient(90deg, rgba(23, 19, 17, 0.1) 10%, transparent 10%) 0 0/18px 18px,
+      linear-gradient(rgba(23, 19, 17, 0.1) 10%, transparent 10%) 0 0/18px 18px,
+      linear-gradient(135deg, rgba(111, 29, 42, 0.06), rgba(23, 19, 17, 0.03));
+    border: 1px solid rgba(23, 19, 17, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .qr-title {
+    margin: 0;
+    font-size: 13.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .qr-text {
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .cover-bottom {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 20px;
+    align-items: end;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    width: min(100%, 1180px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hook {
+    margin: 0;
+    font-size: 15.5px;
+    line-height: 1.52;
+    color: var(--ink);
+    font-weight: 700;
+    max-width: 46ch;
+  }
+
+  .hook span {
+    color: var(--accent);
+  }
+
+  .cover-page .page-no {
+    align-self: end;
+  }
+
+  @media (max-width: 1560px) {
+    .menu-book {
+      padding: 16px;
+    }
+    .page {
+      width: min(100%, var(--page-width));
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="menu-book">
+
+    <!-- OPENING -->
+    <section class="page cover-page">
+      <div class="cover-hero">
+        <div class="cover-copy">
+          <div class="cover-eyebrow">Welcome to Our Menu</div>
+          <div class="cover-logo-row">
+            <img class="cover-brand-mark" data-logo alt="logomultatuli" />
+            <div>
+              <h1 class="cover-title">MULTATULI KOPI</h1>
+              <div class="cover-subtitle">Coffee &amp; Eatery</div>
+            </div>
+          </div>
+          <p class="cover-welcome">Welcome in. Take your time and enjoy the selection.</p>
+          <p class="cover-text">From bold black coffee to creamy signatures and comforting bites, this menu is curated to make every visit feel easy, warm, and worth another round.</p>
+        </div>
+
+        <div class="qr-card">
+          <div class="qr-box">
+            <div id="qrcode" class="qr-grid"></div>
+          </div>
+          <p class="qr-title">Scan for the Digital Menu</p>
+          <p class="qr-text">Prefer not to flip through the menu book? Scan the QR code to view the full menu on your phone.</p>
+        </div>
+      </div>
+
+      <div class="cover-bottom">
+        <p class="hook"><span>No need to browse page by page.</span> Scan the code for a faster way to explore the full menu at your table.</p>
+        <div class="page-no">Opening Page</div>
+      </div>
+    </section>
+
+    <!-- PAGE 1 -->
+    <section class="page">
+      <div class="brand-row">
+        <div class="brand">
+          <div class="eyebrow">Specialty Coffee Menu</div>
+          <h1 class="logo">MULTATULI KOPI</h1>
+          <div class="subtitle">Coffee &amp; Eatery</div>
+        </div>
+        <img class="brand-mark" data-logo alt="logomultatuli" />
+      </div>
+
+      <div class="page-title-wrap">
+        <div class="page-title">
+          <h2>Coffee Basics</h2>
+          <div class="page-no">Page 01</div>
+        </div>
+        <p class="page-desc">A selection of bold brews and refined pours — for those who appreciate coffee in its purest expression.</p>
+      </div>
+
+      <div class="content">
+        <div class="column-stack">
+          <div class="section">
+            <h3 class="section-title">Espresso-Based</h3>
+            <div class="items">
+              <div class="item"><div class="item-head"><div class="item-name">Espresso</div><div class="price">IDR 15.<span class="price-tail">000</span></div></div><p class="desc">A pure espresso shot with a bold aroma, concentrated body, and strong finish.</p><p class="reco">Recommended for: suka kopi straight, intense, dan no-compromise.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Americano</div><div class="price">IDR 15.<span class="price-tail">000</span></div></div><p class="desc">Espresso topped with water for a bold, clean cup that stays firm in flavor without feeling too heavy.</p><p class="reco">Recommended for: suka black coffee yang strong, clean, dan easy to sip.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Iced Lemon Americano</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">An iced americano with lemon slices, combining bold coffee with a bright citrus finish that feels lighter on the palate.</p><p class="reco">Recommended for: suka kopi segar dengan citrus note yang ringan dan tidak terlalu manis.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Sparkling Americano</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Espresso, soda, and lemon in one glass, crisp and fizzy with a refreshing sparkling coffee twist.</p><p class="reco">Recommended for: lagi pengen coffee yang ringan, bubbly, dan beda dari biasanya.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Mocktail Peach</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Shaken espresso with peach syrup, soda, and lemon slices for a sweet, fizzy, and refreshing drink.</p><p class="reco">Recommended for: suka coffee mocktail dengan rasa fruity, manis, dan playful.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Mocktail Passionfruit</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Shaken espresso with passionfruit syrup, soda, and lemon slices, bright and tangy with an extra refreshing finish.</p><p class="reco">Recommended for: suka rasa tropical, sedikit asam, dan minuman yang bikin melek.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column-stack">
+          <div class="section">
+            <h3 class="section-title">Manual Brew</h3>
+            <div class="items">
+              <div class="item"><div class="item-head"><div class="item-name">House Blend Tubruk</div><div class="price">IDR 15.<span class="price-tail">000</span></div></div><p class="desc">A classic tubruk made from house blend beans, bold, simple, and satisfying for traditional coffee drinkers.</p><p class="reco">Recommended for: suka kopi hitam klasik dengan karakter kuat.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Arabica Tubruk</div><div class="price">IDR 18.<span class="price-tail">000</span></div></div><p class="desc">A classic tubruk brewed with arabica beans, offering a softer aroma while keeping a firm and defined taste.</p><p class="reco">Recommended for: suka tubruk coffee tapi pengen karakter yang lebih smooth.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Arabica V60</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Arabica coffee brewed in V60 style, clean and bright with the bean character expressed more clearly.</p><p class="reco">Recommended for: suka manual brew yang ringan, clean, dan elegant.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Japanese</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">A cold V60-style coffee with a light body and a crisp, refreshing finish.</p><p class="reco">Recommended for: suka black coffee dingin yang clean dan easy to drink.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Fermented Arabica</div><div class="price">IDR 25.<span class="price-tail">000</span></div></div><p class="desc">An arabica manual brew with a distinctive fermented profile, expressive aroma, and fruity notes with a light body and memorable character.</p><p class="reco">Recommended for: suka kopi dengan karakter unik, sedikit fruity, dan lebih kompleks.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="note-shot">
+        Extra shot <span class="accent">+ IDR 10.<span class="price-tail">000</span></span>
+      </div>
+
+      <div class="footer-note"><span>Dark Specialty Series</span><span class="accent">Pure, Bold, Refined</span></div>
+    </section>
+
+    <!-- PAGE 2 -->
+    <section class="page">
+      <div class="brand-row">
+        <div class="brand">
+          <div class="eyebrow">Coffee Milk Page</div>
+          <h1 class="logo">MULTATULI KOPI</h1>
+          <div class="subtitle">Coffee &amp; Eatery</div>
+        </div>
+        <img class="brand-mark" data-logo alt="logomultatuli" />
+      </div>
+
+      <div class="page-title-wrap">
+        <div class="page-title">
+          <h2>Coffee Milk</h2>
+          <div class="page-no">Page 02</div>
+        </div>
+        <p class="page-desc">A dedicated milk coffee page — split between classic espresso-and-milk cups and sweeter syrup-based house favorites.</p>
+      </div>
+
+      <div class="content">
+        <div class="column-stack">
+          <div class="section">
+            <h3 class="section-title">Classic Coffee Milk</h3>
+            <div class="items">
+              <div class="item"><div class="item-head"><div class="item-name">Cappuccino</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Espresso and milk with a thicker texture and a stronger coffee presence, served without added sugar for a creamy but not sweet cup.</p><p class="reco">Recommended for: suka milk coffee dengan rasa kopi yang masih dominan dan less sweet.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Latte</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Espresso and milk with a smoother, lighter body, served without added sugar for a soft and creamy cup that is not overly sweet.</p><p class="reco">Recommended for: suka milk coffee yang soft, smooth, dan gampang dinikmati tanpa terlalu manis.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Mocha</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Espresso, milk, and chocolate blended into a sweet, creamy cup with a soft coffee finish.</p><p class="reco">Recommended for: suka kopi manis, chocolaty, dan easy to drink.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column-stack">
+          <div class="section">
+            <h3 class="section-title">House Milk Coffee</h3>
+            <div class="items">
+              <div class="item"><div class="item-head"><div class="item-name">House Milk Coffee Vanilla</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Espresso, milk, and vanilla syrup, smooth and creamy with a soft fragrant sweetness.</p><p class="reco">Recommended for: suka milk coffee yang light, wangi, dan easy to love.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">House Milk Coffee Tiramisu</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Espresso, milk, and tiramisu syrup blended into a creamy cup with soft cocoa-coffee notes and a gentle dessert-like sweetness without feeling too heavy.</p><p class="reco">Recommended for: suka milk coffee manis creamy dengan rasa yang lebih rich dan dessert-like.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">House Milk Coffee Cream Cheese</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Espresso, milk, and cream cheese syrup, creamy and rich with a more distinctive twist.</p><p class="reco">Recommended for: suka milk coffee creamy, unik, dan slightly indulgent.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">House Milk Coffee Aren</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Espresso, milk, and palm sugar syrup, creamy and sweet with a familiar, comforting flavor.</p><p class="reco">Recommended for: suka milk coffee klasik dengan manis aren yang comforting.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note"><span>Espresso + Milk</span><span class="accent">Classic &amp; Signature</span></div>
+    </section>
+
+    <!-- PAGE 3 -->
+    <section class="page">
+      <div class="brand-row">
+        <div class="brand">
+          <div class="eyebrow">Creamy Milk Series</div>
+          <h1 class="logo">MULTATULI KOPI</h1>
+          <div class="subtitle">Coffee &amp; Eatery</div>
+        </div>
+        <img class="brand-mark" data-logo alt="logomultatuli" />
+      </div>
+
+      <div class="page-title-wrap">
+        <div class="page-title">
+          <h2>Creamy Milk Series</h2>
+          <div class="page-no">Page 03</div>
+        </div>
+        <p class="page-desc">Soft textures, rich notes, and signature creations — crafted to comfort, indulge, and invite another sip.</p>
+      </div>
+
+      <div class="content">
+        <div class="column-stack">
+          <div class="section">
+            <h3 class="section-title">Coconut Series</h3>
+            <div class="items">
+              <div class="item"><div class="item-head"><div class="item-name">Coconut Coffee</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Espresso paired with coconut milk for a lighter, smoother, and more refreshing coffee profile with a clean tropical touch.</p><p class="reco">Recommended for: suka kopi creamy tapi tetap light dan easy to drink.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Coconut Strawberry</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Coconut milk and strawberry blended into a creamy fruity drink with a soft refreshing finish.</p><p class="reco">Recommended for: suka minuman manis, creamy, dan fruity.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Coconut Tropical</div><div class="price">IDR 22.<span class="price-tail">000</span></div></div><p class="desc">Coconut milk blended with tropical fruits for a fresh, vibrant, and sunny kind of drink.</p><p class="reco">Recommended for: lagi pengen sesuatu yang fresh, tropical, dan uplifting.</p></div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">Chocolate</h3>
+            <div class="items">
+              <div class="item"><div class="item-head"><div class="item-name">Chocolate</div><div class="price">IDR 22.<span class="price-tail">000</span></div></div><p class="desc">Dark chocolate and milk in a rich creamy blend, sweet, smooth, and comforting.</p><p class="reco">Recommended for: suka minuman cokelat creamy, manis, dan calming.</p></div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">Matcha</h3>
+            <div class="items">
+              <div class="item"><div class="item-head"><div class="item-name">Matcha</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Matcha and milk with a creamy texture and a smooth earthy finish.</p><p class="reco">Recommended for: suka matcha creamy, calm, dan not too strong.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Matchapresso</div><div class="price">IDR 25.<span class="price-tail">000</span></div></div><p class="desc">A matcha drink with one shot of espresso, delivering a bolder taste than regular matcha with an added coffee kick.</p><p class="reco">Recommended for: suka matcha tapi pengen rasa yang lebih bold dan lebih hidup.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column-stack">
+          <div class="section">
+            <h3 class="section-title">Smoothies</h3>
+            <div class="items">
+              <div class="item"><div class="item-head"><div class="item-name">Mango</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Blended mango, banana, and milk for a creamy tropical smoothie with a naturally sweet fruit flavor.</p><p class="reco">Recommended for: suka smoothie creamy, fruity, dan mengenyangkan.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Strawberry</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Blended strawberry, banana, and milk for a soft, creamy smoothie with fresh berry sweetness.</p><p class="reco">Recommended for: suka minuman creamy manis dengan rasa buah yang ringan.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Avocado</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Blended avocado, banana, and milk for a thick, creamy smoothie with a soft buttery taste that feels smooth, mellow, and more filling in every sip.</p><p class="reco">Recommended for: suka smoothie creamy, lembut, dan lebih rich.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Dragon Fruit</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Blended dragon fruit, banana, and milk for a smooth, refreshing drink with naturally vibrant fruit flavor.</p><p class="reco">Recommended for: suka smoothie fresh, vibrant, dan easy to sip.</p></div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">Yakult Series</h3>
+            <div class="items">
+              <div class="item"><div class="item-head"><div class="item-name">Strawberry Yakult</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">A sweet and tangy blend of strawberry, milk, and Yakult for a fun, creamy, refreshing drink.</p><p class="reco">Recommended for: suka minuman manis, creamy, dan sedikit tangy.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Mango Yakult</div><div class="price">IDR 20.<span class="price-tail">000</span></div></div><p class="desc">Mango, milk, and Yakult blended into a creamy tropical drink with sweet and refreshing notes.</p><p class="reco">Recommended for: suka minuman fruity, creamy, dan cheerful.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note"><span>Milk, Texture, Signature</span><span class="accent">Creamy Without Looking Common</span></div>
+    </section>
+
+    <!-- PAGE 4 -->
+    <section class="page">
+      <div class="brand-row">
+        <div class="brand">
+          <div class="eyebrow">Fresh &amp; Easygoing</div>
+          <h1 class="logo">MULTATULI KOPI</h1>
+          <div class="subtitle">Coffee &amp; Eatery</div>
+        </div>
+        <img class="brand-mark" data-logo alt="logomultatuli" />
+      </div>
+
+      <div class="page-title-wrap">
+        <div class="page-title">
+          <h2>Fresh &amp; Non-Coffee</h2>
+          <div class="page-no">Page 04</div>
+        </div>
+        <p class="page-desc">Bright, fruity, and delicately refreshing — an easygoing collection for lighter moods and sweeter moments.</p>
+      </div>
+
+      <div class="content">
+        <div class="column-stack">
+          <div class="section">
+            <h3 class="section-title">Tea (Hot / Ice)</h3>
+            <div class="items">
+              <div class="item"><div class="item-head"><div class="item-name">Tea</div><div class="price">IDR 5.<span class="price-tail">000</span></div></div><p class="desc">Freshly brewed tea that is simple, classic, and easy to enjoy any time of day.</p><p class="reco">Recommended for: suka minuman simpel dan ringan.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Siam Orange</div><div class="price">IDR 8.<span class="price-tail">000</span></div></div><p class="desc">Freshly squeezed Siam orange drink with a light citrus taste that feels bright and easy to enjoy.</p><p class="reco">Recommended for: lagi pengen minuman fresh, ringan, dan non-coffee.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Lemon Tea</div><div class="price">IDR 12.<span class="price-tail">000</span></div></div><p class="desc">Brewed tea with lemon, light, citrusy, and refreshing.</p><p class="reco">Recommended for: suka minuman ringan, segar, dan easy to sip.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Lychee Tea</div><div class="price">IDR 12.<span class="price-tail">000</span></div></div><p class="desc">Tea with lychee syrup for a sweet, fresh, and fruity finish, lifted by a playful floral-fruity twist. Add lychee fruit + IDR 3.000.</p><p class="reco">Recommended for: suka teh manis segar dengan sentuhan buah yang ringan.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Teh Tarik</div><div class="price">IDR 15.<span class="price-tail">000</span></div></div><p class="desc">Tea, milk, and condensed milk combined into a creamy, sweet, and comforting drink.</p><p class="reco">Recommended for: lagi pengen minuman manis, creamy, dan comforting.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Peach Tea</div><div class="price">IDR 15.<span class="price-tail">000</span></div></div><p class="desc">Tea blended with peach syrup for a soft, sweet fruity flavor that is smooth and refreshing.</p><p class="reco">Recommended for: suka fruit tea yang manis lembut dan easy to drink.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Passionfruit Tea</div><div class="price">IDR 15.<span class="price-tail">000</span></div></div><p class="desc">Tea blended with passionfruit syrup for a brighter, tangy, and tropical fruit profile.</p><p class="reco">Recommended for: suka teh segar dengan rasa buah yang lebih vibrant.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column-stack">
+          <div class="section">
+            <h3 class="section-title">Juices</h3>
+            <div class="items">
+              <div class="item"><div class="item-head"><div class="item-name">Mango</div><div class="price">IDR 15.<span class="price-tail">000</span></div></div><p class="desc">Fresh blended mango juice with a naturally sweet, thick, and refreshing fruit taste.</p><p class="reco">Recommended for: suka jus buah manis alami dan menyegarkan.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Strawberry</div><div class="price">IDR 15.<span class="price-tail">000</span></div></div><p class="desc">Fresh blended strawberry juice with a bright fruity flavor and a refreshing finish.</p><p class="reco">Recommended for: suka jus buah segar dengan rasa berry yang jelas.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Avocado</div><div class="price">IDR 15.<span class="price-tail">000</span></div></div><p class="desc">Fresh blended avocado juice with a smooth, creamy texture and a softer, richer, naturally satisfying taste.</p><p class="reco">Recommended for: suka jus creamy, lembut, dan lebih mengenyangkan.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Dragon Fruit</div><div class="price">IDR 15.<span class="price-tail">000</span></div></div><p class="desc">Fresh blended dragon fruit juice that feels light, fresh, and easy to enjoy.</p><p class="reco">Recommended for: suka jus buah ringan dan menyegarkan.</p></div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">Water</h3>
+            <div class="items">
+              <div class="item"><div class="item-head"><div class="item-name">Mineral Water</div><div class="price">IDR 5.<span class="price-tail">000</span></div></div><p class="desc">Simple mineral water to keep you fresh and hydrated.</p><p class="reco">Recommended for: pengen pilihan paling simple dan netral.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Iced Water</div><div class="price">IDR 2.<span class="price-tail">000</span></div></div><p class="desc">A glass of cold iced water that is simple and refreshing.</p><p class="reco">Recommended for: cuma butuh yang dingin dan basic.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note"><span>Tea, Fruit, Refreshment</span><span class="accent">Bright Notes, Softer Mood</span></div>
+    </section>
+
+    <!-- PAGE 5 -->
+    <section class="page">
+      <div class="brand-row">
+        <div class="brand">
+          <div class="eyebrow">Comfort Bites &amp; Plates</div>
+          <h1 class="logo">MULTATULI KOPI</h1>
+          <div class="subtitle">Coffee &amp; Eatery</div>
+        </div>
+        <img class="brand-mark" data-logo alt="logomultatuli" />
+      </div>
+
+      <div class="page-title-wrap">
+        <div class="page-title">
+          <h2>Bites &amp; Meals</h2>
+          <div class="page-no">Page 05</div>
+        </div>
+        <p class="page-desc">From comforting bites to hearty plates — familiar flavors, thoughtfully served for every appetite.</p>
+      </div>
+
+      <div class="content">
+        <div class="column-stack">
+          <div class="section">
+            <h3 class="section-title">Snacks</h3>
+            <div class="items">
+              <div class="item"><div class="item-head"><div class="item-name">French Fries <span style="font-size:0.62em; font-weight:700; color:var(--ink); opacity:0.78; letter-spacing:0.01em;">150gr</span></div><div class="price">IDR 15.<span class="price-tail">000</span></div></div><p class="desc">Crispy french fries that are savory, satisfying, and perfect for sharing.</p><p class="reco">Recommended for: lagi pengen ngemil santai sambil nongkrong.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Grilled Banana with Cheese <span style="font-size:0.62em; font-weight:700; color:var(--ink); opacity:0.78; letter-spacing:0.01em;">150gr</span></div><div class="price">IDR 15.<span class="price-tail">000</span></div></div><p class="desc">Warm grilled banana topped with shredded cheese, sweet, soft, and comforting.</p><p class="reco">Recommended for: suka camilan manis gurih buat teman ngopi.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Fried Banana <span style="font-size:0.62em; font-weight:700; color:var(--ink); opacity:0.78; letter-spacing:0.01em;">150gr</span></div><div class="price">IDR 15.<span class="price-tail">000</span></div></div><p class="desc">Golden fried banana served with condensed milk, warm, sweet, and nostalgic.</p><p class="reco">Recommended for: suka snack manis yang simple tapi ngena.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Tempeh Mendoan <span style="font-size:0.62em; font-weight:700; color:var(--ink); opacity:0.78; letter-spacing:0.01em;">8 slices</span></div><div class="price">IDR 12.<span class="price-tail">000</span></div></div><p class="desc">Lightly battered tempeh with a soft center and a savory finish.</p><p class="reco">Recommended for: suka camilan gurih hangat buat sharing.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Dimsum</div><div class="price">IDR 5.<span class="price-tail">000</span> <span class="price-unit">/ item</span></div></div><p class="desc">Steamed dimsum served with sauce, simple, tasty, and easy to enjoy.</p><p class="reco">Recommended for: pengen light bites sambil ngobrol atau nongkrong.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Fried Rice with Egg</div><div class="price">IDR 15.<span class="price-tail">000</span></div></div><p class="desc">Classic fried rice served with omelette, simple, filling, and comforting.</p><p class="reco">Recommended for: lagi lapar dan pengen makan yang aman, familiar, dan bikin kenyang.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column-stack">
+          <div class="section">
+            <h3 class="section-title">Foods</h3>
+            <div class="items">
+              <div class="item"><div class="item-head"><div class="item-name">Fried Rice with Egg &amp; Chicken</div><div class="price">IDR 18.<span class="price-tail">000</span></div></div><p class="desc">Fried rice with omelette and shredded chicken, more complete and more satisfying.</p><p class="reco">Recommended for: pengen makan kenyang dengan rasa gurih yang familiar.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Crispy Smashed Chili Chicken Rice</div><div class="price">IDR 15.<span class="price-tail">000</span></div></div><p class="desc">Crispy chicken served with sambal, spicy, savory, and satisfying.</p><p class="reco">Recommended for: suka makanan pedas, gurih, dan bikin nagih.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Fried Noodles</div><div class="price">IDR 18.<span class="price-tail">000</span></div></div><p class="desc">Savory stir-fried noodles with familiar seasoning and a comforting taste.</p><p class="reco">Recommended for: suka mie gurih untuk makan santai kapan aja.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Fried Flat Rice Noodles</div><div class="price">IDR 18.<span class="price-tail">000</span></div></div><p class="desc">Stir-fried flat rice noodles with a savory flavor and a soft, chewy texture that feels satisfying.</p><p class="reco">Recommended for: suka mie dengan tekstur lebih lembut dan gurih.</p></div>
+              <div class="item"><div class="item-head"><div class="item-name">Boiled Savory Noodles</div><div class="price">IDR 18.<span class="price-tail">000</span></div></div><p class="desc">Warm boiled noodles with savory seasoning, simple, comforting, and cozy to enjoy.</p><p class="reco">Recommended for: lagi pengen makanan hangat, comforting, dan mengenyangkan.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note"><span>Snack &amp; Meal Companion</span><span class="accent">Familiar Flavors, Better Framed</span></div>
+    </section>
+  </div>
+
+  <script>
+    const logoSrc = "./logomulta.png";
+    document.querySelectorAll("[data-logo]").forEach(img => {
+      img.src = logoSrc;
+    });
+
+    // Generate QR Code - ganti URL ini dengan URL menu online kamu
+    const menuURL = window.location.href; // atau ganti dengan URL spesifik seperti "https://multatulikopi.com/menu"
+    new QRCode(document.getElementById("qrcode"), {
+      text: menuURL,
+      width: 150,
+      height: 150,
+      colorDark: "#6f1d2a",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  </script>
+</body>
+</html>
